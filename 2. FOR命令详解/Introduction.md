@@ -39,36 +39,3 @@ FOR %variable IN (set) DO command [command-parameters]
   command             指定对每个文件执行的命令。
   command-parameters  为特定命令指定参数或命令行开关。
 ```
-
-现在开始讲每个参数的意思：
-
-## 1. /d
-
-```
-FOR /D %variable IN (set) DO command [command-parameters]
-```
-
-如果集中包含通配符，则指定与目录名匹配，而不与文件名匹配。
-
-如果Set（也就是上面写的“相关文件或命令”）包含通配符（`*`和`?`），将对与Set 相匹配的每个目录（而不是指定目录中的文件组）执行指定的Command。
-
-这个参数主要用于目录搜索，不会搜索文件，看这样的例子：
-
-```
-@echo off
-for /d %i in (c:\*) do echo %i
-pause
-```
-
-
-
-
-
-
-
-
-
-
-## 2. /l
-## 3. /r
-## 4. /f
