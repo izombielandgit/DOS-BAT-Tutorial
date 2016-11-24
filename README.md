@@ -1,3 +1,11 @@
 # DOS批处理教程
 
-根据[原作者](http://xiangkg.blog.163.com/)的文章“批处理高级教程精选合编”编写的GitBook版本。
+原作者:龙卷风
+
+原作者博客:<http://xiangkg.blog.163.com/>
+
+根据原作者的文章“批处理高级教程精选合编”编写的GitBook版本。
+
+本文档使用GitBook发布:<https://www.gitbook.com/book/izombielandgit/dos-bat-tutorial/details>
+
+本文档GitHub:<https://github.com/izombielandgit/DOS-BAT-Tutorial>
