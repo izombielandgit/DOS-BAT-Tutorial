@@ -203,6 +203,7 @@ echo 子程序返回值:%return%
 pause
 :sub
 set %1="%2"
+rem %1即return，%2即你好
 goto :eof
 ```
 
@@ -213,3 +214,156 @@ goto :eof
 请按任意键继续...
 ```
 
+子程序例2：（求多个整数相加的子程序）
+
+```
+@echo off
+set sum=0
+call :sub sum 10 20 35
+echo 数据求和结果:%sum%
+pause
+:sub
+rem 参数1为返回变量名称
+set /a %1+=%2
+shift /2
+if not "%2"=="" goto sub
+goto :eof
+```
+
+运行结果：
+
+```
+65
+```
+
+在Win98系统中，不支持上面这种标号调用，须将子程序单独保存为一个批处理程序，然后调用。
+
+### 6.3.5. 用ftp命令实现自动下载
+
+ftp是常用的下载工具，ftp界面中有40多个常用命令，不在这里介绍。这里介绍
+如何用DOS命令行调用ftp命令，实现ftp自动登录，上传下载，并自动退出ftp程序。其实可以将ftp命令组合保存为一个文本文件，然后用以下命令调用即可。
+
+```
+ftp -n -s:[[drive:]path]filename
+```
+
+上面的`filename`为ftp命令文件，包括登录IP地址，用户名，密码，操作命令等
+
+例：
+
+```
+open 90.52.8.3  #打开ip
+user username   #用户为username
+password1234    #密码
+bin             #二进制传输模式
+prompt
+cd tmp1         #切换至username用户下的tmp1目录
+pwd
+lcd d:\download #本地目录
+mget *          #下载tmp1目录下的所有文件
+bye             #退出ftp
+```
+
+笔者注：现在很少用ftp了吧，就当参考思路。
+
+### 6.3.6. 用7-ZIP实现命令行压缩和解压功能
+
+语法格式：（详细情况见7-zip帮助文件，如果有难度可以先跳过，用到的时候再学）
+
+```
+7z <command> [<switch>...] <base_archive_name> [<arguments>...]
+```
+
+7z.exe的每个命令都有不同的参数`<switch>`，请看帮助文件
+
+`<base_archive_name>`为压缩包名称
+
+`<arguments>`为文件名称，支持通配符或文件列表
+
+其中，`7z`是指命令行压缩解压程序7z.exe，`<command>`是7z.exe包含的命令，列举如下：
+
+**a**：Adds files to archive. 添加至压缩包
+
+a命令可用参数：
+
+```
+-i (Include)
+-m (Method)
+-p (Set Password)
+-r (Recurse)
+-sfx (create SFX)
+-si(use StdIn)
+-so (use StdOut)
+-ssw (Compressshared files)
+-t (Type of archive)
+-u (Update)
+-v (Volumes)
+-w (Working Dir)
+-x (Exclude)
+```
+
+**b**：Benchmark
+
+**d**：Deletes files from archive. 从压缩包中删除文件
+
+d命令可用参数：
+
+```
+-i (Include)
+-m (Method)
+-p (Set Password)
+-r (Recurse)
+-u (Update)
+-w (Working Dir)
+-x (Exclude)
+```
+
+**e**：Extract 解压文件至当前目录或指定目录
+
+e命令可用参数：
+
+```
+-ai (Include archives)
+-an (Disable parsing of archive_name)
+-ao (Overwrite mode)
+-ax (Exclude archives)
+-i (Include)
+-o (Set Output Directory)
+-p (Set Password)
+-r (Recurse)
+-so (use StdOut)
+-x (Exclude)
+-y (Assume Yes on all queries)
+```
+
+**l**：Lists contents of archive.
+
+**t**：Test
+
+**u**：Update
+
+**x**：eXtract with full paths 用文件的完整路径解压至当前目录或指定目录
+
+x命令可用参数：
+
+```
+-ai (Include archives)
+-an (Disable parsing of archive_name)
+-ao (Overwrite mode)
+-ax (Exclude archives)
+-i (Include)
+-o (Set Output Directory)
+-p (Set Password)
+-r (Recurse)
+-so (use StdOut)
+-x (Exclude)
+-y (Assume Yes on all queries)
+```
+
+### 6.3.7. 调用 VBScript 程序
+
+使用Windows脚本宿主，可以在命令提示符下运行脚本。CScript.exe提供了用于设置脚本属性的命令行开关。
+
+### 6.3.8. 
+### 6.3.9. 
+### 6.3.10. 
