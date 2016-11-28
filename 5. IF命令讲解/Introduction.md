@@ -2,8 +2,10 @@
 
 可以使用`if /?`查看IF的帮助。
 
-* 5.1. ERRORLEVEL
-* 
+* [5.1. ERRORLEVEL](#51-errorlevel)
+* [5.2. string](#52-string)
+* [5.3. EXIST](#53-exist)
+* [5.4. IF的增强用法](#54-if的增强用法)
 
 IF有三种基本的用法。
 
