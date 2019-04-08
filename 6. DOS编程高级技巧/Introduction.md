@@ -469,7 +469,7 @@ pause
 
 ```
 @echo off
-::批处理文件编码需要为UTF-8，中文消息推送才能正常
+::批处理文件编码需要存为UTF-8无BOM格式，中文消息推送才能正常
 ::填入企业ID
 set CorpID=xxxx
 ::填入应用Secret
