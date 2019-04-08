@@ -10,6 +10,7 @@
 * [6.8. 将批处理转化为可执行文件](#68-将批处理转化为可执行文件)
 * [6.9. 时间延迟](#69-时间延迟)
 * [6.10. 模拟进度条](#610-模拟进度条)
+* [6.11. 企业微信发送消息](#611-企业微信发送消息)
 
 ## 6.1. 交互界面设计
 
@@ -461,3 +462,33 @@ pause
 ```
 
 解释：`set /p a=■<nul`的意思是：只显示提示信息`■`且不换行，也不需手工输入任何信息，这样可以使每个`■`在同一行逐个输出。`ping /n 0 127.1>nul`是输出每个`■`的时间间隔，即每隔多少时间输出一个`■`。
+
+## 6.11. 企业微信发送消息
+
+先注册企业微信，创建一个应用，在应用的可见范围设置权限。
+
+```
+@echo off
+::批处理文件编码需要为UTF-8，中文消息推送才能正常
+::填入企业ID
+set CorpID=xxxx
+::填入应用Secret
+set Secret=xxxx
+set GURL=https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%CorpID%^&corpsecret=%Secret%
+
+::acccess_token
+FOR /F tokens^=10^ delims^=^" %%i in ('curl -s -G "%GURL%"') do set Token=%%i
+set PURL="https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%Token%"
+
+::填入应用AgentId
+set wxAppID=1
+::企业微信中部门成员ID(企业微信成员信息中称为帐号)
+set wxUserID=1
+::发送的消息内容
+set wxMsg=测试
+set Body={ \"touser\":\"%wxUserID%\", \"msgtype\":\"text\", \"agentid\":\"%wxAppID%\", \"text\":{\"content\":\"%wxMsg%\"}, \"safe\":\"0\" }
+
+curl --data-ascii "%Body%" %PURL%
+
+pause
+```
