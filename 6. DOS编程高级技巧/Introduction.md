@@ -492,3 +492,74 @@ curl --data-ascii "%Body%" %PURL%
 
 pause
 ```
+
+一个应用实例：
+
+系统Windows2008R2，可能系统不同，具体变量，参数或设置的地方有可能不同。
+
+下载[CURL](https://curl.haxx.se)，设置好系统变量，如果没有设置，将下面的curl命令替换为绝对路径。
+
+因批处理文件编码需要存为UTF-8无BOM格式，中文消息推送才能正常，所以不要用自带的记事本编辑，可以使用[Notepad++](https://notepad-plus-plus.org/)。
+
+**关机提醒脚本**
+
+新建`shutdown-notify.bat`：
+
+```
+@echo off&setlocal enabledelayedexpansion
+
+set CorpID=
+set Secret=
+set GURL=https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%CorpID%^&corpsecret=%Secret%
+
+FOR /F tokens^=10^ delims^=^" %%i in ('curl -s -G "%GURL%"') do set Token=%%i
+set PURL="https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%Token%"
+
+set wxAppID=1
+set wxUserID=1
+FOR /F "tokens=1 delims= " %%i in ('echo %DATE%') do set RIQI=%%i
+FOR /F "tokens=1 delims=." %%i in ('echo %TIME%') do set SHIJIAN=%%i
+set wxMsg=服务器状态提醒：\n主机名：%COMPUTERNAME%\n状态类型：关机\n状态时间：%RIQI% %SHIJIAN%
+set Body={ \"touser\":\"%wxUserID%\", \"msgtype\":\"text\", \"agentid\":\"%wxAppID%\", \"text\":{\"content\":\"%wxMsg%\"}, \"safe\":\"0\" }
+
+curl --data-ascii "%Body%" %PURL% >nul
+exit
+```
+
+关机时执行脚本设置：
+
+gpedit.msc -> 计算机配置 -> Windows设置 -> 脚本(启动/关机) -> 关机
+
+设置完成后重启（该次关机不会执行），重新启动完成后再关机尝试。
+
+**开机提醒脚本**
+
+新建`boot-notify.bat`：
+
+```
+@echo off&setlocal enabledelayedexpansion
+
+set CorpID=
+set Secret=
+set GURL=https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%CorpID%^&corpsecret=%Secret%
+
+FOR /F tokens^=10^ delims^=^" %%i in ('curl -s -G "%GURL%"') do set Token=%%i
+set PURL="https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%Token%"
+
+set wxAppID=1
+set wxUserID=1
+FOR /F "tokens=1 delims= " %%i in ('echo %DATE%') do set RIQI=%%i
+FOR /F "tokens=1 delims=." %%i in ('echo %TIME%') do set SHIJIAN=%%i
+set wxMsg=服务器状态提醒：\n主机名：%COMPUTERNAME%\n状态类型：开机\n状态时间：%RIQI% %SHIJIAN%
+set Body={ \"touser\":\"%wxUserID%\", \"msgtype\":\"text\", \"agentid\":\"%wxAppID%\", \"text\":{\"content\":\"%wxMsg%\"}, \"safe\":\"0\" }
+
+curl --data-ascii "%Body%" %PURL% >nul
+exit
+```
+
+启动时执行脚本设置：
+
+与关机设置相同位置的“启动”那里添加好执行后，并未生效，不知道什么原因，就改为使用“任务计划程序”。
+
+
+
