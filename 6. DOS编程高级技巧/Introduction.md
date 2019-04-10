@@ -559,7 +559,7 @@ exit
 
 启动时执行脚本设置：
 
-与关机设置相同位置的“启动”那里添加后，并未生效，不知道什么原因，就改为使用“任务计划程序”。
+与关机设置相同位置的“启动”那里添加后，并未生效，不知道什么原因（可能是该处设置时，执行脚本的优先级较高，在还未连上网络时就执行了），改为使用“任务计划程序”。
 
 新建一个任务计划：
 
@@ -570,7 +570,48 @@ exit
 
 新建`login-notify.bat`：
 
+```
+@echo off&setlocal enabledelayedexpansion
+::批处理文件编码需要为UTF-8，中文消息推送才能正常
 
+::设置为当前文件所在目录
+set BAT_HOME=C:\weixin-notify
+
+set CorpID=
+set Secret=
+set GURL=https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%CorpID%^&corpsecret=%Secret%
+
+FOR /F tokens^=10^ delims^=^" %%i in ('curl -s -G "%GURL%"') do set Token=%%i
+set PURL="https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%Token%"
+
+set wxAppID=1
+set wxUserID=1
+::根据系统日志来获取登录用户的用户名, 不使用系统变量%USERNAME%是因为考虑用户执行权限的问题, 所以统一由administrator来执行脚本
+for /f "delims=" %%a in ('WEVTUTIL qe Security ^| findstr winlogon.exe') do (
+  set "str=%%a"
+  set str=!str:TargetUserName^'^>=#!
+  for /f "tokens=2 delims=#" %%A in ("!str!") do (echo %%A>%BAT_HOME%\usertmp.txt)
+)
+::同用户名, 获取登录用户的IP地址(如果有更方便的获取方式可自行替换)
+for /f "delims=" %%a in ('WEVTUTIL qe Security ^| findstr winlogon.exe') do (
+  set "str=%%a"
+  set str=!str:IpAddress^'^>=#!
+  for /f "tokens=2 delims=#" %%A in ("!str!") do (echo %%A>%BAT_HOME%\iptmp.txt)
+)
+for /f "tokens=1 delims=<" %%i in ('type %BAT_HOME%\usertmp.txt') do (set USER=%%i & goto :enduser)
+:enduser
+for /f "tokens=1 delims=<" %%i in ('type %BAT_HOME%\iptmp.txt') do (set IP=%%i & goto :endip)
+:endip
+del %BAT_HOME%\usertmp.txt & del %BAT_HOME%\iptmp.txt
+FOR /F "tokens=1 delims= " %%i in ('echo %DATE%') do set RIQI=%%i
+FOR /F "tokens=1 delims=." %%i in ('echo %TIME%') do set SHIJIAN=%%i
+::冒号不能统一使用英文或中文状态, 会出现乱码, 不知道原因
+set wxMsg=服务器登录提醒：\n主机名：%COMPUTERNAME%\n登录用户^: %USER%\n登录IP^: %IP%\n登录时间^: %RIQI% %SHIJIAN%
+set Body={ \"touser\":\"%wxUserID%\", \"msgtype\":\"text\", \"agentid\":\"%wxAppID%\", \"text\":{\"content\":\"%wxMsg%\"}, \"safe\":\"0\" }
+
+curl --data-ascii "%Body%" %PURL% >nul
+exit
+```
 
 新建一个任务计划：
 
